@@ -1,4 +1,4 @@
-package main
+package credstash
 
 import (
 	"github.com/Clever/unicreds"
@@ -7,7 +7,7 @@ import (
 	"github.com/hashicorp/terraform/terraform"
 )
 
-var _ terraform.ResourceProvider = provider()
+var _ terraform.ResourceProvider = Provider()
 
 const defaultAWSProfile = "default"
 const defaultKMSKey = "alias/credstash"
@@ -19,7 +19,7 @@ type Config struct {
 	KmsKey    string
 }
 
-func provider() terraform.ResourceProvider {
+func Provider() terraform.ResourceProvider {
 	return &schema.Provider{
 		DataSourcesMap: map[string]*schema.Resource{
 			"credstash_secret": dataSourceSecret(),
