@@ -53,7 +53,7 @@ func Provider() terraform.ResourceProvider {
 			"kms_key": {
 				Type:        schema.TypeString,
 				Optional:    true,
-				Default:     defaultAWSProfile,
+				Default:     defaultKMSKey,
 				Description: "The KMS key to use when storing secrets",
 			},
 		},
