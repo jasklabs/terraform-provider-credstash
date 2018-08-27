@@ -62,12 +62,10 @@ func Provider() terraform.ResourceProvider {
 }
 
 func providerConfig(d *schema.ResourceData) (interface{}, error) {
-	region := d.Get("region").(string)
-	//profile := d.Get("profile").(string)
+	region := aws.String(d.Get("region").(string))
+	profile := aws.String(d.Get("profile").(string))
 
-	awsConfig := &aws.Config{Region: aws.String(region)}
-	unicreds.SetDynamoDBConfig(awsConfig)
-	unicreds.SetKMSConfig(awsConfig)
+	unicreds.SetAwsConfig(region, profile)
 
 	return &Config{
 		TableName: d.Get("table").(string),
