@@ -64,6 +64,8 @@ func dataSourceSecretRead(d *schema.ResourceData, meta interface{}) error {
 				if v, ok := d.GetOk("default"); ok {
 					log.Printf("[DEBUG] Using default value %v", v)
 					d.Set("value", v.(string))
+					d.Set("version", "default")
+					d.SetId(fmt.Sprintf("%s-%s-%s", name, hash(v.(string)), "default"))
 					return nil
 				}
 			}
