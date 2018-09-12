@@ -1,9 +1,6 @@
 package credstash
 
 import (
-	"crypto/sha256"
-	"encoding/hex"
-	"fmt"
 	"log"
 
 	"github.com/Clever/unicreds"
@@ -24,7 +21,6 @@ func dataSourceSecret() *schema.Resource {
 				Type:        schema.TypeString,
 				Optional:    true,
 				Description: "Version of the secrets",
-				Default:     "",
 			},
 			"context": {
 				Type:        schema.TypeMap,
@@ -50,52 +46,42 @@ func dataSourceSecretRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 
 	name := d.Get("name").(string)
-	version := d.Get("version").(string)
-	context := unicreds.NewEncryptionContextValue()
-	for k, v := range d.Get("context").(map[string]interface{}) {
-		context.Set(fmt.Sprintf("%s:%v", k, v))
-	}
 
-	if version == "" {
+	var version interface{}
+
+	if _, ok := d.GetOk("version"); !ok {
+		log.Printf("[DEBUG] Version for secret %s not set", name)
 		v, err := unicreds.GetHighestVersion(&config.TableName, name)
 		if err != nil {
-			if err.Error() == unicreds.ErrSecretNotFound.Error() {
-				log.Printf("[DEBUG] Key not found")
-				if v, ok := d.GetOk("default"); ok {
-					log.Printf("[DEBUG] Using default value %v", v)
-					d.Set("value", v.(string))
-					d.Set("version", "default")
-					d.SetId(fmt.Sprintf("%s-%s-%s", name, hash(v.(string)), "default"))
-					return nil
-				}
+			if err != unicreds.ErrSecretNotFound {
+				return err
 			}
-			return err
 		}
 		version = v
 	}
 
-	log.Printf("[DEBUG] Getting secret for name=%q version=%q context=%+v", name, version, context)
-	out, err := unicreds.GetSecret(&config.TableName, name, version, context)
+	if v, ok := d.GetOk("default"); ok && version == "" {
+		log.Printf("[DEBUG] Using default value %v", v)
+		d.Set("value", v.(string))
+		d.Set("version", "default")
+		d.SetId(getID(d))
+		return nil
+	}
+
+	context := getContext(d)
+	log.Printf("[DEBUG] Getting secret for name=%q version=%s context=%+v", name, version.(string), context)
+	out, err := unicreds.GetSecret(&config.TableName, name, version.(string), context)
 	if err != nil {
-		if err.Error() == unicreds.ErrSecretNotFound.Error() {
-			log.Printf("[DEBUG] Key not found")
-			if v, ok := d.GetOk("default"); ok {
-				log.Printf("[DEBUG] Using default value %v", v)
-				d.Set("value", v.(string))
-				return nil
-			}
-		}
 		return err
 	}
 
 	d.Set("value", out.Secret)
 	d.Set("version", version)
-	d.SetId(fmt.Sprintf("%s-%s-%s", name, hash(out.Secret), version))
+	d.SetId(getID(d))
 
 	return nil
 }
 
-func hash(s string) string {
-	sha := sha256.Sum256([]byte(s))
-	return hex.EncodeToString(sha[:])
+func getID(d *schema.ResourceData) string {
+	return d.Get("name").(string)
 }
