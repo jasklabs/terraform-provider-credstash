@@ -38,6 +38,10 @@ func resourceCredstashSecret() *schema.Resource {
 				Optional:    true,
 				Description: "Encryption context for the secret",
 			},
+			"overwrite": {
+				Type:     schema.TypeBool,
+				Optional: true,
+			},
 			"version": {
 				Type:        schema.TypeString,
 				Computed:    true,
@@ -73,14 +77,15 @@ func resourceSecretPut(d *schema.ResourceData, meta interface{}) error {
 		return err
 	}
 
-	context := getContext(d)
-	log.Printf("[DEBUG] Writing secret for name=%q version=%q context=%+v", name, version, context)
-	err = unicreds.PutSecret(&config.TableName, config.KmsKey, name, value, version, context)
-	if err != nil {
-		return err
+	if shouldUpdateSecret(d) {
+		context := getContext(d)
+		log.Printf("[DEBUG] Writing secret for name=%q version=%q context=%+v", name, version, context)
+		err = unicreds.PutSecret(&config.TableName, config.KmsKey, name, value, version, context)
+		if err != nil {
+			return err
+		}
 	}
 
-	d.Set("version", version)
 	d.SetId(getID(d))
 	return resourceSecretRead(d, meta)
 }
@@ -110,7 +115,6 @@ func resourceSecretRead(d *schema.ResourceData, meta interface{}) error {
 	d.Set("value", out.Secret)
 	d.Set("name", name)
 	d.Set("version", version)
-	d.SetId(getID(d))
 
 	return nil
 }
@@ -123,7 +127,6 @@ func resourceSecretDelete(d *schema.ResourceData, meta interface{}) error {
 	if err != nil {
 		return err
 	}
-	d.SetId("")
 	return nil
 }
 
@@ -133,4 +136,19 @@ func getContext(d *schema.ResourceData) *unicreds.EncryptionContextValue {
 		context.Set(fmt.Sprintf("%s:%v", k, v))
 	}
 	return context
+}
+
+func shouldUpdateSecret(d *schema.ResourceData) bool {
+	// if it is a new resource
+	if d.IsNewResource() {
+		return true
+	}
+
+	// If the user has specified a preference, return their preference
+	if value, ok := d.GetOkExists("overwrite"); ok {
+		return value.(bool)
+	}
+
+	// Since the user has not specified a preference, obey lifecycle rules
+	return false
 }
