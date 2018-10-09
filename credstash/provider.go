@@ -9,9 +9,6 @@ import (
 
 var _ terraform.ResourceProvider = Provider()
 
-const defaultAWSProfile = "default"
-const defaultKMSKey = "alias/credstash"
-
 type Config struct {
 	Region    string
 	TableName string
@@ -47,13 +44,13 @@ func Provider() terraform.ResourceProvider {
 			"profile": {
 				Type:        schema.TypeString,
 				Optional:    true,
-				Default:     defaultAWSProfile,
+				Default:     "",
 				Description: "The profile that should be used to connect to AWS",
 			},
 			"kms_key": {
 				Type:        schema.TypeString,
 				Optional:    true,
-				Default:     defaultKMSKey,
+				Default:     "alias/credstash",
 				Description: "The KMS key to use when storing secrets",
 			},
 		},
