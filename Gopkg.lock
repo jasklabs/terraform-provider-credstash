@@ -120,6 +120,14 @@
   version = "v3.5.1"
 
 [[projects]]
+  digest = "1:ffe9824d294da03b391f44e1ae8281281b4afc1bdaa9588c9097785e3af10cec"
+  name = "github.com/davecgh/go-spew"
+  packages = ["spew"]
+  pruneopts = "UT"
+  revision = "8991bc29aa16c548c550c7ff78260e27b9ab7c73"
+  version = "v1.1.1"
+
+[[projects]]
   digest = "1:865079840386857c809b72ce300be7580cb50d3d3129ce11bf9aa6ca2bc1934a"
   name = "github.com/fatih/color"
   packages = ["."]
@@ -271,7 +279,15 @@
   revision = "fa9f258a92500514cc8e9c67020487709df92432"
 
 [[projects]]
-  digest = "1:45a8e998ff1b326a362c11169253f09433d4f2cd5145452d06480651fae1354f"
+  digest = "1:16ae35b3a854c667baaf55ff5d455c486f7c2baf040a2727f2ef0e4b096b2a95"
+  name = "github.com/hashicorp/logutils"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "a335183dfd075f638afcc820c90591ca3c97eba6"
+  version = "v1.0.0"
+
+[[projects]]
+  digest = "1:197bc726b83189de8595f7bae0eb8ff6f75d5b4f49a127a18694559c8704b05e"
   name = "github.com/hashicorp/terraform"
   packages = [
     "config",
@@ -280,8 +296,11 @@
     "config/module",
     "dag",
     "flatmap",
+    "helper/config",
     "helper/hashcode",
     "helper/hilmapstructure",
+    "helper/logging",
+    "helper/resource",
     "helper/schema",
     "httpclient",
     "moduledeps",
@@ -298,8 +317,8 @@
     "version",
   ]
   pruneopts = "UT"
-  revision = "41e50bd32a8825a84535e353c3674af8ce799161"
-  version = "v0.11.7"
+  revision = "ac4fff416318bf0915a0ab80e062a99ef3724334"
+  version = "v0.11.11"
 
 [[projects]]
   branch = "master"
@@ -587,6 +606,9 @@
   analyzer-version = 1
   input-imports = [
     "github.com/Clever/unicreds",
+    "github.com/aws/aws-sdk-go/aws",
+    "github.com/hashicorp/terraform/config",
+    "github.com/hashicorp/terraform/helper/resource",
     "github.com/hashicorp/terraform/helper/schema",
     "github.com/hashicorp/terraform/plugin",
     "github.com/hashicorp/terraform/terraform",

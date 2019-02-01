@@ -9,9 +9,6 @@ import (
 
 var _ terraform.ResourceProvider = Provider()
 
-const defaultAWSProfile = "default"
-const defaultKMSKey = "alias/credstash"
-
 type Config struct {
 	Region    string
 	TableName string
@@ -37,6 +34,7 @@ func Provider() terraform.ResourceProvider {
 				}, nil),
 				Description: "The region where AWS operations will take place. Examples\n" +
 					"are us-east-1, us-west-2, etc.",
+				InputDefault: "us-east-1",
 			},
 			"table": {
 				Type:        schema.TypeString,
@@ -47,13 +45,13 @@ func Provider() terraform.ResourceProvider {
 			"profile": {
 				Type:        schema.TypeString,
 				Optional:    true,
-				Default:     defaultAWSProfile,
+				Default:     "",
 				Description: "The profile that should be used to connect to AWS",
 			},
 			"kms_key": {
 				Type:        schema.TypeString,
 				Optional:    true,
-				Default:     defaultAWSProfile,
+				Default:     "alias/credstash",
 				Description: "The KMS key to use when storing secrets",
 			},
 		},
@@ -62,12 +60,10 @@ func Provider() terraform.ResourceProvider {
 }
 
 func providerConfig(d *schema.ResourceData) (interface{}, error) {
-	region := d.Get("region").(string)
-	//profile := d.Get("profile").(string)
+	region := aws.String(d.Get("region").(string))
+	profile := aws.String(d.Get("profile").(string))
 
-	awsConfig := &aws.Config{Region: aws.String(region)}
-	unicreds.SetDynamoDBConfig(awsConfig)
-	unicreds.SetKMSConfig(awsConfig)
+	unicreds.SetAwsConfig(region, profile)
 
 	return &Config{
 		TableName: d.Get("table").(string),
