@@ -34,6 +34,7 @@ func Provider() terraform.ResourceProvider {
 				}, nil),
 				Description: "The region where AWS operations will take place. Examples\n" +
 					"are us-east-1, us-west-2, etc.",
+				InputDefault: "us-east-1",
 			},
 			"table": {
 				Type:        schema.TypeString,

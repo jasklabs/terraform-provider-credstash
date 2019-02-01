@@ -41,6 +41,7 @@ func resourceCredstashSecret() *schema.Resource {
 			"overwrite": {
 				Type:     schema.TypeBool,
 				Optional: true,
+				Default:  false,
 			},
 			"version": {
 				Type:        schema.TypeString,
@@ -53,11 +54,13 @@ func resourceCredstashSecret() *schema.Resource {
 
 func resourceSecretExists(d *schema.ResourceData, meta interface{}) (bool, error) {
 	config := meta.(*Config)
-	name := d.Id()
+	name := d.Get("name").(string)
 	log.Printf("[DEBUG] Checking secret name=%q", name)
 	_, err := unicreds.GetHighestVersion(&config.TableName, name)
 	if err != nil {
+		log.Printf("[DEBUG] Error checking secret: %s", err.Error())
 		if err == unicreds.ErrSecretNotFound {
+			log.Print("[DEBUG} Matched NotFound error, returning no error")
 			return false, nil
 		}
 		return false, err
@@ -77,7 +80,11 @@ func resourceSecretPut(d *schema.ResourceData, meta interface{}) error {
 		return err
 	}
 
-	if shouldUpdateSecret(d) {
+	update, err := shouldUpdateSecret(d, meta)
+	if err != nil {
+		return err
+	}
+	if update {
 		context := getContext(d)
 		log.Printf("[DEBUG] Writing secret for name=%q version=%q context=%+v", name, version, context)
 		err = unicreds.PutSecret(&config.TableName, config.KmsKey, name, value, version, context)
@@ -138,17 +145,21 @@ func getContext(d *schema.ResourceData) *unicreds.EncryptionContextValue {
 	return context
 }
 
-func shouldUpdateSecret(d *schema.ResourceData) bool {
-	// if it is a new resource
-	if d.IsNewResource() {
-		return true
+func shouldUpdateSecret(d *schema.ResourceData, meta interface{}) (bool, error) {
+	exists, err := resourceSecretExists(d, meta)
+	if err != nil {
+		return false, err
+	}
+	// If the resource doesn't exist, always create it
+	if !exists {
+		return true, nil
 	}
 
+	// If the resource does exist, only overwrite it told too
+	overwrite := false
 	// If the user has specified a preference, return their preference
 	if value, ok := d.GetOkExists("overwrite"); ok {
-		return value.(bool)
+		overwrite = value.(bool)
 	}
-
-	// Since the user has not specified a preference, obey lifecycle rules
-	return false
+	return overwrite, nil
 }
