@@ -100,7 +100,7 @@ func resourceSecretPut(d *schema.ResourceData, meta interface{}) error {
 func resourceSecretRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 
-	name := d.Id()
+	name := d.Get("name").(string)
 	log.Printf("[DEBUG] Reading secret name=%q", name)
 	version := d.Get("version").(string)
 
