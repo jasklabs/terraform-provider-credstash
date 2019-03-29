@@ -23,7 +23,7 @@ func testAccPreCheck(t *testing.T) {
 	if v := os.Getenv("AWS_REGION"); v != "" {
 		return
 	}
-	t.Fatal("Either AWS_REGION must be set for acceptance tests")
+	t.Fatal("AWS_REGION must be set for acceptance tests")
 }
 func TestProvider(t *testing.T) {
 	if err := Provider().(*schema.Provider).InternalValidate(); err != nil {

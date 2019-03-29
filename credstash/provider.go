@@ -1,7 +1,7 @@
 package credstash
 
 import (
-	"github.com/Clever/unicreds"
+	"github.com/Versent/unicreds"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/hashicorp/terraform/terraform"
@@ -63,7 +63,7 @@ func providerConfig(d *schema.ResourceData) (interface{}, error) {
 	region := aws.String(d.Get("region").(string))
 	profile := aws.String(d.Get("profile").(string))
 
-	unicreds.SetAwsConfig(region, profile)
+	unicreds.SetAwsConfig(region, profile, nil)
 
 	return &Config{
 		TableName: d.Get("table").(string),

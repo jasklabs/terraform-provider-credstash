@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/Clever/unicreds"
+	"github.com/Versent/unicreds"
 	"github.com/hashicorp/terraform/helper/schema"
 )
 

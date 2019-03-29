@@ -2,11 +2,12 @@
 
 
 [[projects]]
-  digest = "1:0808cbdaaf78766e4c571457f6798bca0ac4d5e119cd3eb526f1b6aee90dfbe9"
-  name = "github.com/Clever/unicreds"
+  digest = "1:54b83be09e7ac188611cb4565b3758aba5e5ff907885641a8383fea5b3901fab"
+  name = "github.com/Versent/unicreds"
   packages = ["."]
   pruneopts = "UT"
-  revision = "8ddef5f30943fe4a9c59fa3cc1339e8cb8a54df2"
+  revision = "7135c859e003e299267cdc7acfa4866e7ca975ad"
+  version = "1.7.0"
 
 [[projects]]
   digest = "1:dc2ba13235a4c8f80a40599575a3f10acb4736cb372f1a68b88333c06564471d"
@@ -605,7 +606,7 @@
   analyzer-name = "dep"
   analyzer-version = 1
   input-imports = [
-    "github.com/Clever/unicreds",
+    "github.com/Versent/unicreds",
     "github.com/aws/aws-sdk-go/aws",
     "github.com/hashicorp/terraform/config",
     "github.com/hashicorp/terraform/helper/resource",

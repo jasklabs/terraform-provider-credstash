@@ -26,8 +26,8 @@
 
 
 [[constraint]]
-  name = "github.com/Clever/unicreds"
-  revision = "8ddef5f30943fe4a9c59fa3cc1339e8cb8a54df2"
+  name = "github.com/Versent/unicreds"
+  version = "1.7.0"
 
 [[constraint]]
   name = "github.com/aws/aws-sdk-go"
