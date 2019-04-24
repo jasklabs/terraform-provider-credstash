@@ -1,4 +1,4 @@
-VERSION=v1.1
+VERSION=v1.1.1
 PACKAGES = $(shell go list ./... | grep -v vendor)
 
 install:
