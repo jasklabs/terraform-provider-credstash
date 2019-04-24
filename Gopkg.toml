@@ -27,7 +27,7 @@
 
 [[constraint]]
   name = "github.com/Versent/unicreds"
-  version = "1.7.0"
+  version = "1.6.0"
 
 [[constraint]]
   name = "github.com/aws/aws-sdk-go"
