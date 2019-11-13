@@ -102,14 +102,9 @@ func resourceSecretRead(d *schema.ResourceData, meta interface{}) error {
 
 	name := d.Get("name").(string)
 	log.Printf("[DEBUG] Reading secret name=%q", name)
-	version := d.Get("version").(string)
-
-	if version == "" {
-		v, err := unicreds.GetHighestVersion(&config.TableName, name)
-		if err != nil {
-			return err
-		}
-		version = v
+	version, err := unicreds.GetHighestVersion(&config.TableName, name)
+	if err != nil {
+		return err
 	}
 
 	context := getContext(d)
